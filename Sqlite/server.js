@@ -1,6 +1,14 @@
 var express = require('express');
 var app = express();
 var sqlite3 = require("sqlite3").verbose();
+var bodyParser = require('body-parser');
+
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
+app.use(express.json());       // to support JSON-encoded bodies
+app.use(express.urlencoded()); // to support URL-encoded bodies
 
 // creating a database and has a call-back function to deal with error
 let db = new sqlite3.Database("form.db",(err ) => {
@@ -49,10 +57,11 @@ db.get('select * from user_details where rowid = ?',rowid,(err,rows) => {
     }
 });
 
-var data = {
+ var data = {
     name: 'Tapan',
     age: 41
 }
+
 // Inserting data as JS objects into tables
  db.run("insert into user_details(Name,Age) values (?,?)",[data['name'],data['age']],function(err){
     if(err){
@@ -61,6 +70,12 @@ var data = {
     else{
         console.log('data inserted');
     }
+});
+
+app.post('/sign_up',function(req,res){
+    var name = req.body.username; // get the username from the form
+    var password = req.body.password; // get the password from the form
+    
 });
 
 
@@ -92,6 +107,6 @@ db.close((err) => {
 
 
 
-app.listen(8000,function(){
+app.listen(9000,function(){
     console.log('Listening');
 });
